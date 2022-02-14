@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<CatListCubit>(
-      create: (BuildContext context) => CatListCubit()..getCatList(0),
+      create: (BuildContext context) => CatListCubit()..getCatList(),
       child: MaterialApp(
         title: 'Cat Api Flutter',
         routes: {
