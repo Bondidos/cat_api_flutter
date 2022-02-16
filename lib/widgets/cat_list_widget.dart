@@ -6,20 +6,21 @@ import '../models/cat_model.dart';
 
 class CatListWidget extends StatefulWidget {
   final List<Cat> data;
+
   const CatListWidget({Key? key, required this.data}) : super(key: key);
 
   @override
   State createState() => CatListState(data);
 }
 
-class CatListState extends State<CatListWidget>{
+class CatListState extends State<CatListWidget> {
   final List<Cat> data;
   CatListState(this.data);
 
   @override
   Widget build(BuildContext context) {
-    var catCubit = BlocProvider.of<CatListCubit>(context);
-    catCubit.test();
+    CatListCubit catCubit = BlocProvider.of<CatListCubit>(context);
+    bool isNextPageTriggered = false;
 
     return Scaffold(
       appBar: AppBar(
@@ -27,17 +28,17 @@ class CatListState extends State<CatListWidget>{
       ),
       body: SafeArea(
         child: NotificationListener<ScrollNotification>(
-          onNotification: (scrollNotification){
-            print('${scrollNotification.depth}');
+          onNotification: (scrollNotification) {
 
-            // print("index is; $index, catLength is: ${data.length}");
-           /* if(scrollNotification.metrics.atEdge) {
+            // print("${scrollNotification.metrics.pixels}");
+            if (scrollNotification.metrics.extentAfter == 0 &&
+                !isNextPageTriggered) {
+              isNextPageTriggered = true;
               setState(() {
                 catCubit.nextPage();
               });
-
-            }*/
-            return false;
+            }
+            return true;
           },
           child: GridView.builder(
             padding: const EdgeInsets.all(6.0),
@@ -48,17 +49,11 @@ class CatListState extends State<CatListWidget>{
               context,
               int index,
             ) {
-
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 3),
-                child: GestureDetector(
-                  onTap: (){
-                    print("tap on the $index element");
-                  },
-                  child: Image.network(
-                    data[index].url,
-                    fit: BoxFit.cover,
-                  ),
+                child: Image.network(
+                  data[index].url,
+                  fit: BoxFit.cover,
                 ),
               );
             },
@@ -67,6 +62,4 @@ class CatListState extends State<CatListWidget>{
       ),
     );
   }
-
-
 }
