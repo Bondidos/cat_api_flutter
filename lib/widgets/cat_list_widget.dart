@@ -15,7 +15,33 @@ class CatListWidget extends StatefulWidget {
 
 class CatListState extends State<CatListWidget> {
   final List<Cat> data;
+
   CatListState(this.data);
+
+  ScrollController? _controller;
+
+  @override
+  void initState() {
+    _controller = ScrollController();
+    _controller?.addListener(
+      () async {
+        if (_controller!.offset == _controller?.position.maxScrollExtent) {
+          await BlocProvider.of<CatListCubit>(this.context).nextPage();
+          setState(() {});
+        }
+        // print("${_controller?.offset}");
+        // _controller?.position.maxScrollExtent  253.90909090909088
+      },
+    );
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,37 +53,24 @@ class CatListState extends State<CatListWidget> {
         title: const Text("Cute cats"),
       ),
       body: SafeArea(
-        child: NotificationListener<ScrollNotification>(
-          onNotification: (scrollNotification) {
-
-            // print("${scrollNotification.metrics.pixels}");
-            if (scrollNotification.metrics.extentAfter == 0 &&
-                !isNextPageTriggered) {
-              isNextPageTriggered = true;
-              setState(() {
-                catCubit.nextPage();
-              });
-            }
-            return true;
+        child: GridView.builder(
+          controller: _controller,
+          padding: const EdgeInsets.all(6.0),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2, childAspectRatio: 1.0, crossAxisSpacing: 6),
+          itemCount: data.length,
+          itemBuilder: (
+            context,
+            int index,
+          ) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 3),
+              child: Image.network(
+                data[index].url,
+                fit: BoxFit.cover,
+              ),
+            );
           },
-          child: GridView.builder(
-            padding: const EdgeInsets.all(6.0),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, childAspectRatio: 1.0, crossAxisSpacing: 6),
-            itemCount: data.length,
-            itemBuilder: (
-              context,
-              int index,
-            ) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 3),
-                child: Image.network(
-                  data[index].url,
-                  fit: BoxFit.cover,
-                ),
-              );
-            },
-          ),
         ),
       ),
     );
