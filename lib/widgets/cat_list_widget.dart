@@ -1,6 +1,6 @@
 import 'package:cat_api_tas4_flutter/bloc/cat_list_bloc/cat_list_cubit.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 
 import '../models/cat_model.dart';
 
@@ -15,8 +15,8 @@ class CatListWidget extends StatefulWidget {
 
 class CatListState extends State<CatListWidget> {
   final List<Cat> data;
-
-  CatListState(this.data);
+  final CatListCubit cubit;
+  CatListState(this.data): cubit = GetIt.I<CatListCubit>();
 
   ScrollController? _controller;
 
@@ -26,11 +26,9 @@ class CatListState extends State<CatListWidget> {
     _controller?.addListener(
       () async {
         if (_controller!.offset == _controller?.position.maxScrollExtent) {
-          await BlocProvider.of<CatListCubit>(this.context).nextPage();
+          await cubit.nextPage();
           setState(() {});
         }
-        // print("${_controller?.offset}");
-        // _controller?.position.maxScrollExtent  253.90909090909088
       },
     );
 
@@ -45,8 +43,6 @@ class CatListState extends State<CatListWidget> {
 
   @override
   Widget build(BuildContext context) {
-    CatListCubit catCubit = BlocProvider.of<CatListCubit>(context);
-    bool isNextPageTriggered = false;
 
     return Scaffold(
       appBar: AppBar(

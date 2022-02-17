@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:bloc/bloc.dart';
 
 import '../../models/cat_model.dart';
-import '../../remote_service/network_constants.dart';
 import '../../utils/util_methods.dart';
 
 part '../cat_list_bloc/cat_list_state.dart';
@@ -17,17 +16,12 @@ class CatListCubit extends Cubit<ListState> {
 
   void test() => print("page number is: $page");
   Future<void> nextPage() async {
-    // emit(const ListLoading());
-    print("triggered");
     page++;
     Uri uri = createUri(page);
     CatApiService catApiService = CatApiService(uri: uri);
-    //todo error case
     var buffer = createCatListFromJson(await catApiService.getCatListResponse());
     catList.addAll(buffer);
     emit(ListLoaded(list: catList));
-
-    print("page is: $page");
   }
 
   Future<void> getCatList() async {
