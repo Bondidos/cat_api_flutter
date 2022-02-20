@@ -63,6 +63,15 @@ class CatListState extends State<CatListWidget> {
               padding: const EdgeInsets.symmetric(vertical: 3),
               child: Image.network(
                 data[index].url,
+                loadingBuilder: (context,child,progress){
+                  return progress == null
+                      ? child
+                      : CircularProgressIndicator(
+                    strokeWidth: 10,
+                    backgroundColor: Theme.of(context).backgroundColor,
+                    color: Theme.of(context).primaryColor,
+                  );
+                },
                 fit: BoxFit.cover,
               ),
             );
